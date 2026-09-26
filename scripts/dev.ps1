@@ -1,5 +1,5 @@
 # =====================================================================
-# SevaSetu — Windows daily launcher (PowerShell)
+# SevaSetu - Windows daily launcher (PowerShell 5.1 compatible)
 # Starts the FastAPI backend (venv) + Vite frontend dev server.
 #   powershell -ExecutionPolicy Bypass -File .\scripts\dev.ps1
 # Stop both servers with Ctrl+C.
@@ -18,15 +18,16 @@ if (-not (Test-Path ".env")) {
 $backendPort = 8000
 $frontendPort = 5173
 
+Write-Host ""
 Write-Host "=== SevaSetu Dev Launcher ===" -ForegroundColor Cyan
 
-# ── Backend: uvicorn with auto-reload on port 8000 ────────────────
+# -- Backend: uvicorn with auto-reload on port 8000 ---------------------
 Write-Host "[*] Starting backend: http://127.0.0.1:$backendPort  (Swagger: /docs)" -ForegroundColor Green
 $backend = Start-Process -FilePath ".\venv\Scripts\python.exe" `
     -ArgumentList "-m", "uvicorn", "backend.main:app", "--host", "127.0.0.1", "--port", "$backendPort", "--reload" `
     -PassThru -NoNewWindow
 
-# ── Frontend: Vite dev server with /api proxy to the backend ──────
+# -- Frontend: Vite dev server with /api proxy to the backend -----------
 Write-Host "[*] Starting frontend: http://localhost:$frontendPort" -ForegroundColor Green
 Push-Location frontend
 try {
@@ -34,7 +35,8 @@ try {
 } finally {
     Pop-Location
     if ($backend -and -not $backend.HasExited) {
-        Write-Host "`n[*] Stopping backend (PID $($backend.Id))..." -ForegroundColor Yellow
+        Write-Host ""
+        Write-Host "[*] Stopping backend (PID $($backend.Id))..." -ForegroundColor Yellow
         Stop-Process -Id $backend.Id -Force -ErrorAction SilentlyContinue
     }
 }
