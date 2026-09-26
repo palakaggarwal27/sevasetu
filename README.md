@@ -94,6 +94,61 @@ SevaSetu is not just a software platform; it is a digital lifeline designed spec
 
 ## 🚀 Running the Project
 
+### Method 0: One-Command Quick Start (Recommended for Local Development)
+
+The repo ships self-setup scripts that create the virtual environment, install all backend + frontend dependencies, generate a `.env` template, and launch both servers. A venv is never committed to git, so run setup once per machine after cloning.
+
+#### Windows (PowerShell)
+```powershell
+# One-time setup (creates .\venv, installs deps, creates .env from env.example)
+powershell -ExecutionPolicy Bypass -File .\scripts\setup.ps1
+
+# >>> Then open .env and set your DATABASE_URL (Supabase → Connection pooling, port 6543) <<<
+
+# Every day after that — starts backend (port 8000) + frontend (port 5173) together
+powershell -ExecutionPolicy Bypass -File .\scripts\dev.ps1
+```
+
+#### macOS / Linux
+```bash
+# One-time setup
+sh ./scripts/setup.sh
+
+# >>> Then set DATABASE_URL inside .env <<<
+
+# Every day after that
+sh ./scripts/dev.sh
+```
+
+Open **http://localhost:5173** — Vite proxies `/api` to the FastAPI backend at `127.0.0.1:8000`. Swagger docs: **http://127.0.0.1:8000/docs**.
+
+<details>
+<summary>Manual setup (if you prefer doing it yourself)</summary>
+
+```powershell
+# Windows PowerShell
+python -m venv venv
+.\venv\Scripts\python.exe -m pip install -r backend/requirements.txt
+Copy-Item env.example .env      # then edit DATABASE_URL
+cd frontend; npm install; cd ..
+.\venv\Scripts\python.exe -m uvicorn backend.main:app --host 127.0.0.1 --port 8000 --reload
+# In a second terminal:  cd frontend; npm run dev
+```
+
+```bash
+# macOS / Linux
+python3 -m venv venv
+./venv/bin/python -m pip install -r backend/requirements.txt
+cp env.example .env             # then edit DATABASE_URL
+cd frontend && npm install && cd ..
+./venv/bin/python -m uvicorn backend.main:app --host 127.0.0.1 --port 8000 --reload
+# In a second terminal:  cd frontend && npm run dev
+```
+
+</details>
+
+---
+
 ### Method 1: Single-Instance Unified Docker Deployment (Recommended)
 
 Both the React SPA and FastAPI backend run in a single container. The React frontend is compiled during the multi-stage build, and FastAPI serves both the static UI and API on port `8000`.
@@ -224,6 +279,10 @@ sevasetu/
 ├── docker-compose.yml         # Local container orchestration
 ├── render.yaml                # Single-instance Render deployment blueprint
 ├── README.md                  # Project overview, sentiment, and setup guide
+├── env.example                # Environment variable template (setup scripts copy it to .env)
+├── scripts/                   # One-command setup & daily launchers
+│   ├── setup.ps1 / setup.sh   # Create venv, install deps, generate .env (Windows / macOS-Linux)
+│   └── dev.ps1 / dev.sh       # Start backend (8000) + frontend (5173) together
 │
 ├── backend/                   # FastAPI Backend
 │   ├── database.py            # SQLAlchemy engine, Supabase connection & URL normalizer

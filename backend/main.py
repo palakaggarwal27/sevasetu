@@ -43,6 +43,7 @@ from .hospital_loader import hospital_directory
 # In-memory caches for static/read-heavy endpoints
 _STATS_CACHE: Dict[str, Any] = {"villages": None, "hospitals": None, "updated_at": 0.0}
 _DISTRICTS_CACHE: Dict[str, Any] = {"data": None, "updated_at": 0.0}
+_TALUKAS_CACHE: Dict[str, Any] = {}
 _VILLAGE_SEARCH_CACHE: Dict[str, Any] = {}
 
 # ----------------- Triage Deduplication & Rate Limiting Guardrails -----------------
